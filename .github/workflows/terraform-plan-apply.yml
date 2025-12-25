@@ -42,33 +42,33 @@ jobs:
           name: tfplan
           path: tfplan.binary
 
-  terraform-apply:
-    name: Terraform Apply
-    needs: terraform-plan
-    runs-on: ubuntu-latest
-    environment: environment # 👈 GitHub Environment to require approval
+  # terraform-apply:
+  #   name: Terraform Apply
+  #   needs: terraform-plan
+  #   runs-on: ubuntu-latest
+  #   environment: environment # 👈 GitHub Environment to require approval
 
-    steps:
-      - name: Download Terraform Plan
-        uses: actions/download-artifact@v4
-        with:
-          name: tfplan
-          path: .
+  #   steps:
+  #     - name: Download Terraform Plan
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: tfplan
+  #         path: .
 
-      - name: Authenticate to Google Cloud
-        uses: google-github-actions/auth@v1
-        with:
-          token_format: "access_token"
-          workload_identity_provider: "projects/494432944003/locations/global/workloadIdentityPools/github-pool/providers/github-provider"
-          service_account: "terraform-github@main-nucleus-418523.iam.gserviceaccount.com"
+  #     - name: Authenticate to Google Cloud
+  #       uses: google-github-actions/auth@v1
+  #       with:
+  #         token_format: "access_token"
+  #         workload_identity_provider: "projects/494432944003/locations/global/workloadIdentityPools/github-pool/providers/github-provider"
+  #         service_account: "terraform-github@main-nucleus-418523.iam.gserviceaccount.com"
 
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.5.7
+  #     - name: Set up Terraform
+  #       uses: hashicorp/setup-terraform@v3
+  #       with:
+  #         terraform_version: 1.5.7
 
-      - name: Terraform Init
-        run: terraform init
+  #     - name: Terraform Init
+  #       run: terraform init
 
-      - name: Terraform Apply
-        run: terraform apply -auto-approve tfplan.binary
+  #     - name: Terraform Apply
+  #       run: terraform apply -auto-approve tfplan.binary
