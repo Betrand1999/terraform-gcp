@@ -1,3 +1,4 @@
+# .github/workflows/terraform-plan.yml
 name: Terraform Plan
 
 on:
@@ -34,4 +35,10 @@ jobs:
         run: terraform init
 
       - name: Terraform Plan
-        run: terraform plan
+        run: terraform plan -out=tfplan
+
+      - name: Upload Plan Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: terraform-plan
+          path: tfplan
