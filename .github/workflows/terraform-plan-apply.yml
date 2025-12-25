@@ -7,7 +7,7 @@ on:
 
 permissions:
   contents: read
-  id-token: write
+  id-token: write # Needed for OIDC authentication
 
 jobs:
   terraform-plan:
@@ -37,7 +37,7 @@ jobs:
         run: terraform plan -out=tfplan.binary
 
       - name: Upload Terraform Plan
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: tfplan
           path: tfplan.binary
@@ -46,11 +46,11 @@ jobs:
     name: Terraform Apply
     needs: terraform-plan
     runs-on: ubuntu-latest
-    environment: environment # 👈 This triggers approval
+    environment: environment # 👈 GitHub Environment to require approval
 
     steps:
       - name: Download Terraform Plan
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: tfplan
           path: .
