@@ -1,16 +1,24 @@
-name: Terraform Apply with Manual Approval
+name: Terraform Plan and Apply
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write
 
 jobs:
-  plan:
+  terraform-plan:
     name: Terraform Plan
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
 
-      - name: Auth to GCP
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
         with:
           token_format: "access_token"
@@ -28,24 +36,26 @@ jobs:
       - name: Terraform Plan
         run: terraform plan -out=tfplan.binary
 
-      - name: Upload plan artifact
+      - name: Upload Terraform Plan
         uses: actions/upload-artifact@v3
         with:
           name: tfplan
           path: tfplan.binary
 
-  apply:
+  terraform-apply:
     name: Terraform Apply
-    needs: plan
+    needs: terraform-plan
     runs-on: ubuntu-latest
-    environment: production # <--- this is where your approval is required
+    environment: environment # 👈 This triggers approval
+
     steps:
-      - uses: actions/download-artifact@v3
+      - name: Download Terraform Plan
+        uses: actions/download-artifact@v3
         with:
           name: tfplan
           path: .
 
-      - name: Auth to GCP
+      - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v1
         with:
           token_format: "access_token"
@@ -61,4 +71,4 @@ jobs:
         run: terraform init
 
       - name: Terraform Apply
-        run: terraform apply tfplan.binary
+        run: terraform apply -auto-approve tfplan.binary
